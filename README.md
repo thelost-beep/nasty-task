@@ -1,29 +1,35 @@
 # 🚀 NastyTask Done
 
-**NastyTask Done** is a premium, real-time academic task marketplace designed for seamless collaboration. Whether you need help with an assignment or want to earn by sharing your expertise, NastyTask provides a secure and fast platform with a state-of-the-art chatting system.
+![GitHub stars](https://img.shields.io/github/stars/thelost-beep/nasty-task?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/thelost-beep/nasty-task?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/thelost-beep/nasty-task?style=for-the-badge)
+![License](https://img.shields.io/github/license/thelost-beep/nasty-task?style=for-the-badge)
+
+**NastyTask Done** is a premium, real-time academic task marketplace. Designed with a focus on speed, security, and user experience, it serves as a bridge between students and experts.
 
 ---
 
 ## 🛠 Tech Stack
 
-| Component | Technology |
-| :--- | :--- |
-| **Frontend** | React, TypeScript, Vite |
-| **Styling** | Tailwind CSS, Lucide Icons |
-| **Backend** | Supabase (Auth, DB, Realtime, Storage) |
-| **Database** | PostgreSQL |
-| **Realtime** | PostgreSQL CDC (Change Data Capture) |
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| **Frontend** | React 18 + TypeScript | UI Logic & Componentization |
+| **Build Tool** | Vite | Ultra-fast Development & Bundling |
+| **Styling** | Tailwind CSS | Utility-first, Responsive Design |
+| **Icons** | Lucide React | Clean, Modern Vector Icons |
+| **Backend** | Supabase | Auth, Database, Storage, & Realtime |
+| **Database** | PostgreSQL | Relational Data Modeling |
 
 ---
 
-## ✨ Features
+## ✨ Premium Features
 
-- **Real-time Messaging**: WhatsApp-like speed with instant delivery and read status.
-- **Task Marketplace**: Browse, post, and accept tasks with a unified bidding system.
-- **Secure Profiles**: Automatic profile creation from Google/OAuth with reputation tracking.
-- **Interactive Board**: Real-time task feed updates.
-- **Dark Mode**: Premium glassmorphism UI with full theme support.
-- **Notifications**: Instant alerts for task acceptance, bids, and messages.
+- **⚡ Instant Messaging**: A WhatsApp-like experience with real-time delivery, typing indicators, and read receipts.
+- **🎨 Glassmorphism UI**: A stunning, modern interface with smooth transitions, gradients, and full dark mode support.
+- **🛡️ Iron-clad Security**: Row Level Security (RLS) ensures that only authorized users can access or modify their own data.
+- **📢 Real-time Feed**: Tasks appear on the dashboard the moment they are posted—no refresh needed.
+- **🤖 Auto-Profiling**: Instant profile setup for Google & OAuth users with intelligent name extraction.
+- **📈 Reputation System**: Peer-to-peer rating and verification system to build trust within the community.
 
 ---
 
@@ -31,55 +37,72 @@
 
 ```mermaid
 graph TD
-    A[User/Client] -->|React + Vite| B(Frontend UI)
-    B -->|Supabase Auth| C{Authentication}
-    B -->|Realtime Subscriptions| D[PostgreSQL CDC]
-    B -->|REST/RPC| E[PostgreSQL Database]
-    E -->|Triggers| D
-    B -->|Storage SDK| F[Supabase Storage]
+    A[User Browser] -->|React/Vite| B(Premium UI)
+    B -->|Supabase SDK| C{Supabase Gateway}
     
-    subgraph "Supabase Backend"
-    C
-    D
-    E
-    F
+    subgraph "Backend Services"
+    C -->|JWT Auth| D[Authentication]
+    C -->|PostgreSQL| E[Database Engine]
+    C -->|Realtime| F[Websocket Hub]
+    C -->|S3| G[Object Storage]
     end
+    
+    E -->|Triggers| F
+    E -->|CDC| F
+    F -->|Instant Push| B
 ```
 
 ---
 
-## 📊 Database Schema
+## 📊 Database Relationship Diagram
 
 ```mermaid
 erDiagram
-    PROFILES ||--o{ TASKS : owns
-    PROFILES ||--o{ TASKS : accepts
-    PROFILES ||--o{ MESSAGES : sends
-    TASKS ||--o{ MESSAGES : contains
-    PROFILES ||--o{ BIDS : places
-    TASKS ||--o{ BIDS : receives
-    CONVERSATIONS ||--o{ CONVERSATION_PARTICIPANTS : includes
-    PROFILES ||--o{ CONVERSATION_PARTICIPANTS : participates
-    CONVERSATIONS ||--o{ DIRECT_MESSAGES : holds
-    PROFILES ||--o{ DIRECT_MESSAGES : sends
+    PROFILES ||--o{ TASKS : "owns/posts"
+    PROFILES ||--o{ TASKS : "accepts/works"
+    PROFILES ||--o{ MESSAGES : "sends"
+    TASKS ||--o{ MESSAGES : "contains chat"
+    TASKS ||--o{ BIDS : "has multiples"
+    PROFILES ||--o{ BIDS : "places"
+    CONVERSATIONS ||--o{ CONVERSATION_PARTICIPANTS : "has participants"
+    PROFILES ||--o{ CONVERSATION_PARTICIPANTS : "joins"
+    CONVERSATIONS ||--o{ DIRECT_MESSAGES : "holds thread"
+    PROFILES ||--o{ DIRECT_MESSAGES : "sends DMs"
 ```
 
 ---
 
-## 💬 Real-time Messaging Flow
+## � Task Lifecycle
 
 ```mermaid
-sequenceDiagram
-    participant U1 as User A
-    participant S as Supabase Realtime
-    participant DB as PostgreSQL
-    participant U2 as User B
-    
-    U1->>DB: Send Message (Insert)
-    DB-->>DB: Update Conversation (Trigger)
-    DB-->>S: Broadcast Change (Replica Identity Full)
-    S-->>U1: Update Local Message State
-    S-->>U2: Receive Message Instantly
+stateDiagram-v2
+    [*] --> OPEN: User Posts Task
+    OPEN --> IN_PROGRESS: Task Accepted
+    OPEN --> OPEN: Bids Received
+    IN_PROGRESS --> DELIVERED: Work Submitted
+    DELIVERED --> DONE: Payment/Rating Confirmed
+    DONE --> [*]
+```
+
+---
+
+## 📁 Project Structure
+
+```text
+nasty-task/
+├── src/
+│   ├── components/      # Reusable UI & Logical components
+│   │   ├── auth/        # Login/Signup logic
+│   │   ├── layout/      # Sidebar & Navigation
+│   │   ├── messages/    # Real-time chat UI
+│   │   ├── profile/     # User settings & stats
+│   │   └── tasks/       # Task feed & detail cards
+│   ├── hooks/           # Custom React hooks (useAuth, useChat, etc.)
+│   ├── lib/             # Supabase client & types
+│   └── App.tsx          # Main entry point & Routing
+├── supabase/
+│   └── migrations/      # PostgreSQL schema & RLS policies
+└── tailwind.config.js   # Custom theme & Glassmorphism settings
 ```
 
 ---
@@ -87,41 +110,47 @@ sequenceDiagram
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
-- Node.js (v18+)
-- Supabase Account
+- [Node.js](https://nodejs.org/) (v18+)
+- [Supabase CLI](https://supabase.com/docs/guides/cli) (optional, for DB pushes)
 
 ### 2. Installation
 ```bash
-# Clone the repository
 git clone https://github.com/thelost-beep/nasty-task.git
-
-# Install dependencies
+cd nasty-task
 npm install
 ```
 
-### 3. Environment Setup
-Create a `.env` file in the root:
+### 3. Environment Config
+Rename `.env.example` to `.env` or create a new one:
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-### 4. Running Locally
+### 4. Running the App
 ```bash
 npm run dev
 ```
 
-### 5. Database Setup
-The migrations are located in `supabase/migrations/`. You can push them using the Supabase CLI:
-```bash
-supabase db push
-```
+---
+
+## 🛡 Security & RLS Policies
+
+NastyTask uses **Row Level Security (RLS)** to protect user data at the database level:
+
+| Table | Policy | Scope |
+| :--- | :--- | :--- |
+| `profiles` | `Anyone can read active` | Public |
+| `profiles` | `Users can update own` | Owner |
+| `tasks` | `Authenticated can read all` | Authenticated |
+| `messages` | `Participants only` | Task Members |
+| `notifications` | `Own notifications only` | Recipient |
 
 ---
 
-## 🛡 License
-Distributed under the MIT License. See `LICENSE` for more information.
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-**Developed with ❤️ for Advanced Agentic Coding.**
+**Developed with ❤️ by the NastyTask Team.**
